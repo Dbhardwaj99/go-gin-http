@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	videoService    service.VideoService       = service.New()
-	videoController controller.VideoController = controller.New(videoService)
+	songService    service.SongService       = service.New()
+	songController controller.SongController = controller.New(songService)
 )
 
 func setupLogOutput() {
@@ -26,18 +26,26 @@ func main() {
 	setupLogOutput()
 	server := gin.New()
 
-	server.Use(gin.Recovery(), middlewares.Logger(), middlewares.Auth())
+	server.Static("/css", "./templates/css")
+	server.LoadHTMLGlob("templates/*.html")
 
-	protected := server.Group("")
-	protected.Use(middlewares.Auth(), gindump.Dump())
+	server.Use(gin.Recovery(), middlewares.Logger())
+
+	apiRoutes := server.Group("/api")
+	apiRoutes.Use(middlewares.Auth(), gindump.Dump())
 	{
-		protected.GET("/videos", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, videoController.FindAll())
+		apiRoutes.GET("/songs-api", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK, songController.FindAll())
 		})
 
-		protected.POST("/videos", func(ctx *gin.Context) {
-			ctx.JSON(http.StatusOK, videoController.Save(ctx))
+		apiRoutes.POST("/songs-api", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK, songController.Save(ctx))
 		})
+	}
+
+	viewRoutes := server.Group("/view")
+	{
+		viewRoutes.GET("/songs", songController.ShowAll)
 	}
 
 	server.Run(":8080")

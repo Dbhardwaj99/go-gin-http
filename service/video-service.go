@@ -2,24 +2,24 @@ package service
 
 import "go-gin-http/entity"
 
-type VideoService interface {
-	Save(entity.Video) entity.Video
-	FindAll() []entity.Video
+type SongService interface {
+	Save(entity.Song) entity.Song
+	FindAll() []entity.Song
 }
 
-type videoService struct {
-	videos []entity.Video
+type songService struct {
+	songs []entity.Song
 }
 
-func New() VideoService {
-	return &videoService{}
+func New() SongService {
+	return &songService{}
 }
 
-func (service *videoService) Save(video entity.Video) entity.Video {
-	service.videos = append(service.videos, video)
-	return video
+func (service *songService) Save(song entity.Song) entity.Song {
+	service.songs = append(service.songs, song)
+	return song
 }
 
-func (service *videoService) FindAll() []entity.Video {
-	return service.videos
+func (service *songService) FindAll() []entity.Song {
+	return service.songs
 }

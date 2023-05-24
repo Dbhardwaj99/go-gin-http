@@ -7,9 +7,9 @@ type Person struct {
 	Email     string `json:"email" binding:"required,email"`
 }
 
-type Video struct {
-	Title       string `json:"title" binding:"min:2,max:10"`
-	Description string `json:"description" binding:"max:20"`
-	URL         string `json:"url" binding:"required,url"`
+type Song struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	URL         string `json:"url"`
 	Author      Person `json:"author" binding:"required"`
 }
