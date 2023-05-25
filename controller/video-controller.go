@@ -5,6 +5,7 @@ import (
 	"go-gin-http/entity"
 	"go-gin-http/service"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,6 +13,8 @@ import (
 type SongController interface {
 	FindAll() []entity.Song
 	Save(ctx *gin.Context) entity.Song
+	Update(ctx *gin.Context) error
+	Delete(ctx *gin.Context)
 	ShowAll(ctx *gin.Context)
 }
 
@@ -20,7 +23,7 @@ type controller struct {
 }
 
 func New(service service.SongService) SongController {
-	return controller{
+	return &controller{
 		service: service,
 	}
 }
@@ -50,4 +53,31 @@ func (c controller) ShowAll(ctx *gin.Context) {
 		"songs": songs,
 	}
 	ctx.HTML(http.StatusOK, "index.html", data)
+}
+
+func (c controller) Update(ctx *gin.Context) error {
+	var song entity.Song
+	err := ctx.ShouldBindJSON(&song)
+	if err != nil {
+		return err
+	}
+
+	id, err := strconv.ParseUint(ctx.Params("id"), 0, 0)
+	if err != nil {
+		return err
+	}
+	song.ID = id
+	c.service.Update(song)
+	return nil
+}
+
+func (c controller) Delete(ctx *gin.Context) error {
+	var song entity.Song
+	id, err := strconv.ParseUint(ctx.Params("id"), 0, 0)
+	if err != nil {
+		return err
+	}
+	song.ID = id
+	c.service.Delete(song)
+	return nil
 }
